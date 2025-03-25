@@ -125,6 +125,13 @@ From Pets
 Where OwnerID IS NULL;
 
 -- 10 
+SELECT  
+    FORMAT(DonationDate, 'MMMM yyyy') AS DonationPeriod,  
+  SUM(DonationAmount) AS TotalDonation  
+FROM Donations  
+GROUP BY FORMAT(DonationDate, 'MMMM yyyy')  
+ORDER BY MIN(DonationDate);
+
 
 -- Distict breeds between age group
 Select distinct Breed , Name, Age
