@@ -1,5 +1,7 @@
 -- SQL Query to retrieve names and emails of all customers 
 
+use TechShop
+
 Select (firstname+' '+lastname) as Name, email from Customers
 
 -- List of all orders with their order dates and corresponding customer names
@@ -103,7 +105,9 @@ Select * from Orders
 
 alter table Customers add OrderCount int
 
-Select * from Customers
-Update Customers set OrderCount = (Select count(*) from Orders)
-where Customers.CustomerID = Orders.customerID
+Update Customers Set OrderCount = sub.TotalOrders
+from Customers
+Join(Select CustomerID, Count(orderID) as TotalOrders from Orders
+Group by customerID) AS sub On Customers.CustomerID = sub.customerID
 
+Select * From Customers
