@@ -1,22 +1,22 @@
 Use PetPals
 
 -- Creating Pets table
-CREATE TABLE Pets (PetID INT PRIMARY KEY Identity(1,1), Name VARCHAR(100) NOT NULL, Age INT NOT NULL, Breed VARCHAR(100) NOT NULL, Type VARCHAR(50) NOT NULL,
+Create table Pets (PetID Int primary key Identity(1,1), Name varchar(100) NOT NULL, Age INT NOT NULL, Breed varchar(100) NOT NULL, Type varchar(50) NOT NULL,
     AvailableForAdoption BIT NOT NULL);
 
 -- Creating the Shelters table
-CREATE TABLE Shelters ( ShelterID INT PRIMARY KEY Identity(100,1) , Name VARCHAR(max) NOT NULL, Location VARCHAR(max) NOT NULL);
+Create table Shelters ( ShelterID Int primary key Identity(100,1) , Name varchar(max) NOT NULL, Location varchar(max) NOT NULL);
 
 -- Creating the Donations table
-CREATE TABLE Donations(DonationID INT PRIMARY KEY IDENTITY(200,1), DonorName VARCHAR(MAX) NOT NULL, DonationType VARCHAR(50) NOT NULL,
-    DonationAmount DECIMAL(12,2) DEFAULT NULL, DonationItem VARCHAR(100) DEFAULT NULL, DonationDate DATE NOT NULL)
+Create table Donations(DonationID Int primary key IDENTITY(200,1), DonorName varchar(MAX) NOT NULL, DonationType varchar(50) NOT NULL,
+    DonationAmount decimal(12,2), DonationItem varchar(100) , DonationDate DATE NOT NULL)
 
 --Creating the AdoptionEvents table
-Create table AdoptionEvents(EventID INT PRIMARY KEY Identity(300,1), EventName VARCHAR(max) NOT NULL, EventDate DATE NOT NULL, Location VARCHAR(255) NOT NULL);
+Create table AdoptionEvents(EventID Int primary key Identity(300,1), EventName varchar(max) NOT NULL, EventDate DATE NOT NULL, Location varchar(255) NOT NULL);
 
 -- Creating the participants table
-Create table Participants (ParticipantID INT PRIMARY KEY IDENTITY(400,1),ParticipantName VARCHAR(max) NOT NULL,ParticipantType VARCHAR(50) NOT NULL, EventID INT,
-    Constraint FK_Participant_Event FOREIGN KEY (EventID) REFERENCES AdoptionEvents(EventID))
+Create table Participants (ParticipantID Int primary key IDENTITY(400,1),ParticipantName varchar(max) NOT NULL,ParticipantType varchar(50) NOT NULL, EventID INT,
+    Constraint FK_Participant_Event Foreign key (EventID) references AdoptionEvents(EventID))
 
 --Insert values
 INSERT INTO Pets (Name, Age, Breed, Type, AvailableForAdoption) VALUES  
@@ -80,7 +80,7 @@ where p.EventID = 300;
 
 Select * from Shelters
 
-CREATE PROCEDURE UpdateShelterInfo @shelterID INT, @ShelterName varchar(max), @ShelterLoc varchar(max)
+Create procedure UpdateShelterInfo @shelterID int, @ShelterName varchar(max), @ShelterLoc varchar(max)
 As
 Begin
 Update Shelters set Name = @ShelterName where ShelterID = @shelterID;
@@ -107,7 +107,7 @@ Select * from Donations;
 Select s.Name as ShelterName, SUM(d.DonationAmount) AS TotalDonation  
 From Shelters as s  
 JOIN Donations as d 
-ON s.ShelterID = d.ShelterID  
+on s.ShelterID = d.ShelterID  
 Group by s.Name;
 
 -- seting up
@@ -125,12 +125,12 @@ From Pets
 Where OwnerID IS NULL;
 
 -- 10 
-SELECT  
-    FORMAT(DonationDate, 'MMMM yyyy') AS DonationPeriod,  
-  SUM(DonationAmount) AS TotalDonation  
-FROM Donations  
-GROUP BY FORMAT(DonationDate, 'MMMM yyyy')  
-ORDER BY MIN(DonationDate);
+Select  
+    Format(DonationDate, 'MMMM yyyy') AS DonationPeriod,  
+  Sum(DonationAmount) AS TotalDonation  
+From Donations  
+Group by FORMAT(DonationDate, 'MMMM yyyy')  
+Order by MIN(DonationDate);
 
 
 -- Distict breeds between age group
@@ -148,10 +148,10 @@ Select * from pets
 Select * from Shelters
 
 Select * from pets
-SELECT p.Name AS PetName, s.Name AS ShelterName  
-FROM Pets p  
+Select p.Name as PetName, s.Name as ShelterName  
+From Pets p  
 JOIN Shelters s ON p.shelterId = s.ShelterID  
-WHERE p.AvailableForAdoption =1;
+Where p.AvailableForAdoption =1;
 
 
 --number of participants in events
@@ -178,32 +178,32 @@ on p.ownerID = a.ParticipantID
 Group by p.name, a.ParticipantName
 
 --list of all shelters along with the count of pets currently available for adoption
-SELECT s.Name AS ShelterName, COUNT(p.PetID) AS AvailablePets  
-FROM Shelters s  
+Select s.Name AS ShelterName, COUNT(p.PetID) AS AvailablePets  
+From Shelters s  
 Left JOIN Pets p ON s.ShelterID = p.ShelterID AND p.AvailableForAdoption = 1  
-GROUP BY s.Name;
+Group by s.Name;
 
 --pair of pets of same breed
 
-SELECT p1.Name AS Pet1, p2.Name AS Pet2, p1.Breed, s.Name AS ShelterName  
-FROM Pets p1  
-JOIN Pets p2 ON p1.ShelterID = p2.ShelterID  
-AND p1.Breed = p2.Breed  
-AND p1.PetID <> p2.PetID  
-JOIN Shelters s ON p1.ShelterID = s.ShelterID  
-ORDER BY s.Name, p1.Breed;
+Select p1.Name as Pet1, p2.Name as Pet2, p1.Breed, s.Name as ShelterName  
+From Pets p1  
+join Pets p2 ON p1.ShelterID = p2.ShelterID  
+and p1.Breed = p2.Breed  
+and p1.PetID <> p2.PetID  
+join Shelters s ON p1.ShelterID = s.ShelterID  
+Order by s.Name, p1.Breed;
 
 --List all possible combinations of shelters and adoption events. 
-SELECT s.Name AS ShelterName, e.EventName  
-FROM Shelters s  
-CROSS JOIN AdoptionEvents e  
-ORDER BY s.Name, e.EventName;
+Select s.Name, e.EventName  
+from Shelters s  
+cross join  AdoptionEvents e  
+Order by s.Name, e.EventName;
 
 
 --shelter that has the highest number of adopted pets.
 Select * from pets
-SELECT TOP 1 s.Name AS ShelterName, COUNT(p.PetID) AS AdoptedPets  
-FROM Shelters s  
-JOIN Pets p ON s.ShelterID = p.ShelterID   
-GROUP BY s.Name  
-ORDER BY COUNT(p.PetID) DESC;
+Select top 1 s.Name AS ShelterName, count(p.PetID) as AdoptedPetsCount
+From Shelters s  
+join Pets p on s.ShelterID = p.ShelterID   
+group by s.Name  
+order by count(p.PetID) desc;
