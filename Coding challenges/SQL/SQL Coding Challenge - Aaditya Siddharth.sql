@@ -38,6 +38,7 @@ Insert Into Shelters VALUES ('Chennai Animal Rescue Center', 'Chennai, Tamil Nad
 ('Hyderabad Animal Welfare Society', 'Hyderabad, Andhra Pradesh');  
 
 -- inserting into donations table
+--9404611354
 
 Insert into Donations (DonorName, DonationType, DonationAmount, DonationItem, DonationDate)  
 VALUES  
@@ -106,9 +107,15 @@ Select * from Donations;
 
 Select s.Name as ShelterName, SUM(d.DonationAmount) AS TotalDonation  
 From Shelters as s  
-JOIN Donations as d 
+left JOIN Donations as d 
 on s.ShelterID = d.ShelterID  
-Group by s.Name;
+Group by s.Name
+order by sum(d.DonationAmount) DEsc;
+
+Select s.Name, (Select sum(d.DonationAmount) from Donations as d Where d.ShelterID = s.ShelterID) as TotalDonation
+from Shelters as s
+order by TotalDonation desc;
+
 
 -- seting up
 Alter table Pets ADD OwnerID INT NULL;
